@@ -1,19 +1,27 @@
 package cz.muni.fi.namesny.network;
 
-import java.util.List;
-
 public class Layer {
-    private List<Neuron> neurons;
 
-    public Layer(List<Neuron> neurons) {
-        this.neurons = neurons;
+    private Neuron[] neurons;
+
+    public Layer(int numNeurons, int prevLayerSize) {
+
+        this.neurons = new Neuron[numNeurons];
+
+        for (int i = 0; i < numNeurons; i++) {
+            this.neurons[i] = new Neuron(prevLayerSize);
+        }
     }
 
-    public List<Neuron> getNeurons() {
-        return neurons;
+    public double[] compute(double[] inputs) {
+
+        double[] outputs = new double[neurons.length];
+
+        for (int i = 0; i < neurons.length; i++) {
+            outputs[i] = neurons[i].compute(inputs);
+        }
+
+        return outputs;
     }
 
-    public void setNeurons(List<Neuron> neurons) {
-        this.neurons = neurons;
-    }
 }
