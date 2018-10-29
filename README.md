@@ -1,3 +1,3 @@
-# mnist-neural-network
+# Artificial Neural Network
 
 work in progress
