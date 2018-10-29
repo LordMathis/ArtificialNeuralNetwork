@@ -2,9 +2,7 @@ package cz.muni.fi.namesny;
 
 import cz.muni.fi.namesny.network.Network;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Main {
 
