@@ -12,7 +12,7 @@ public class Main {
         Network network = new Network(networkLayers);
 
         double[] input = {1.0d, 0.0d};
-        double[] result = network.feedForward(input);
+        double[] result = network.softmax(network.feedForward(input));
 
         System.out.println(Arrays.toString(result));
     }

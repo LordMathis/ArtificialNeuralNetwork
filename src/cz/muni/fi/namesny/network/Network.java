@@ -34,4 +34,21 @@ public class Network {
         return nextInputs;
     }
 
+    public double[] softmax(double[] input) {
+
+        double totalInput = 0;
+
+        for (double in : input) {
+            totalInput += Math.exp(in);
+        }
+
+        double[] result = new double[input.length];
+
+        for (int i = 0; i < input.length; i++) {
+            result[i] = Math.exp(input[i]) / totalInput;
+        }
+
+        return result;
+    }
+
 }

@@ -1,6 +1,7 @@
 package cz.muni.fi.namesny.matrixutils;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 /**
@@ -14,13 +15,16 @@ public class Utils {
      * @param numCols Number of columns in the new matrix
      * @return New matrix where each element is 0
      */
-    public static double[][] initializeMatrix(int numRows, int numCols, Random random) {
+    public static double[][] initializeMatrix(int numRows, int numCols, boolean random) {
         double[][] result = new double[numRows][numCols];
 
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if (random != null) {
-                    result[i][j] = random.nextDouble();
+                if (random) {
+
+                    double range = Math.sqrt(6/((double)numRows + (double)numCols));
+                    result[i][j] = getRandomFromRange(range);
+
                 } else{
                     result[i][j] = 0.0d;
                 }
@@ -61,6 +65,12 @@ public class Utils {
         dimensions[1] = matrix[0].length;
 
         return dimensions;
+    }
+
+    public static double getRandomFromRange(double range) {
+
+        return ThreadLocalRandom.current().nextDouble(-range, range);
+
     }
 
 

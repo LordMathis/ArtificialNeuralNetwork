@@ -49,7 +49,7 @@ public class MatrixMath {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsB[1], null);
+        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsB[1], false);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsB[1]; j++) {
@@ -77,7 +77,7 @@ public class MatrixMath {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsA[1], null);
+        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsA[1], false);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsA[1]; j++) {

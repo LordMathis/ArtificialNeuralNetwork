@@ -3,6 +3,7 @@ package cz.muni.fi.namesny.network;
 import cz.muni.fi.namesny.matrixutils.MatrixMath;
 import cz.muni.fi.namesny.matrixutils.Utils;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Layer {
@@ -12,8 +13,7 @@ public class Layer {
 
     public Layer(int numNeurons, int inputSize) {
 
-        Random random = new Random();
-        this.layer = Utils.initializeMatrix(numNeurons, inputSize, random);
+        this.layer = Utils.initializeMatrix(numNeurons, inputSize, true);
         this.bias = Utils.initializeVector(numNeurons, null);
     }
 
@@ -24,6 +24,8 @@ public class Layer {
         for (int i = 0; i < result.length; i++) {
             result[i] = activate(result[i]);
         }
+
+        System.out.println(Arrays.toString(result));
 
         return result;
 
