@@ -77,7 +77,7 @@ public class MatrixMath {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsA[1], false);
+        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsA[1], null);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsA[1]; j++) {
@@ -105,6 +105,27 @@ public class MatrixMath {
 
         for (int i = 0; i < vectorA.length; i++) {
             result[i] = vectorA[i] + vectorB[i];
+        }
+
+        return result;
+    }
+
+    /**
+     * Implements elementwise vector multiplication
+     * @param vectorA
+     * @param vectorB
+     * @return vector v such that for each i: v[i]=a[i]*b[i]
+     */
+    public static double[] hadamard(double[] vectorA, double[] vectorB) {
+
+        if (vectorA.length != vectorB.length) {
+            throw new IllegalArgumentException("Vector lengths do not match");
+        }
+
+        double result[] = new double[vectorA.length];
+
+        for (int i = 0; i < vectorA.length; i++) {
+            result[i] = vectorA[i] * vectorB[i];
         }
 
         return result;
