@@ -5,10 +5,15 @@ import java.util.List;
 public class Network {
 
     private Layer[] layers;
+    private ActivationFunction activationFunction;
+    private ActivationDerivative activationDerivative;
 
-    public Network(int[] layerSizes) {
+    public Network(int[] layerSizes,
+                   ActivationFunction activationFunction,
+                   ActivationDerivative activationDerivative) {
 
         this.layers = new Layer[layerSizes.length];
+        this.activationFunction = activationFunction;
 
         for (int i = 0; i < layerSizes.length; i++) {
             Integer layerSize = layerSizes[i];
@@ -25,13 +30,31 @@ public class Network {
     public double[] feedForward(double[] inputs) {
 
         double[] nextInputs = inputs;
+        double[] layerResult;
 
-        for (Layer layer :
-                layers) {
-            nextInputs = layer.compute(nextInputs);
+        for (Layer layer : layers) {
+            layerResult = layer.compute(nextInputs);
+            layer.setError(layerResult);
+
+            nextInputs = activate(layerResult);
         }
 
         return nextInputs;
+    }
+
+    public void backPropagate() {
+
+    }
+
+    public double[] activate(double[] input) {
+
+        double[] result = new double[input.length];
+
+        for (int i = 0; i < input.length; i++) {
+            result[i] = activationFunction.compute(input[i]);
+        }
+
+        return result;
     }
 
     public double[] softmax(double[] input) {
