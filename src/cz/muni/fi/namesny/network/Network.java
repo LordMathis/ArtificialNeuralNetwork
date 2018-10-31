@@ -51,4 +51,20 @@ public class Network {
         return result;
     }
 
+    public double quadraticCost(double[] predicted, double[] actual) {
+
+        double cost = 0.0d;
+
+        if (predicted.length != actual.length) {
+            throw new IllegalArgumentException("Vector lengths do not match");
+        }
+
+        for (int i = 0; i < predicted.length; i++) {
+            cost += Math.pow(actual[i] - predicted[i], 2);
+        }
+
+        return cost/2.0d;
+
+    }
+
 }
