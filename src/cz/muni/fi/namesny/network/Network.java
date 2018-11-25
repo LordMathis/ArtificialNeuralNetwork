@@ -1,25 +1,27 @@
 package cz.muni.fi.namesny.network;
 
 import cz.muni.fi.namesny.matrixutils.MatrixMath;
-
-import java.util.Arrays;
+import cz.muni.fi.namesny.matrixutils.Utils;
 
 public class Network {
 
     private Layer[] layers;
     private ActivationFunction activationFunction;
     private ActivationDerivative activationDerivative;
+    private double learningRate;
 
     private double[][][] batchResults;
     private double[][][] batchDeltas;
 
     public Network(int[] layerSizes,
                    ActivationFunction activationFunction,
-                   ActivationDerivative activationDerivative) {
+                   ActivationDerivative activationDerivative,
+                   double learningRate) {
 
         this.layers = new Layer[layerSizes.length - 1];
         this.activationFunction = activationFunction;
         this.activationDerivative = activationDerivative;
+        this.learningRate = learningRate;
 
 
         int prevLayerSize = layerSizes[0];
@@ -30,10 +32,6 @@ public class Network {
             this.layers[i - 1] = new Layer(layerSize, prevLayerSize);
             prevLayerSize = layerSize;
         }
-
-        System.out.println(this.layers.length);
-
-
     }
 
     public double[] feedForward(double[] inputs, int k) {
@@ -69,18 +67,9 @@ public class Network {
 
         for (int i = layers.length - 2; i >= 0; i--) {
 
-            double[][] transposedWeights = MatrixMath.transpose(layers[i + 1].getLayer());
+            double[][] transposedWeights = MatrixMath.transpose(layers[i + 1].getWeights());
             double[] multiple = MatrixMath.multiply(transposedWeights, batchDeltas[k][i + 1]);
             double[] activateDerivation = activateDerivation(batchResults[k][i]);
-
-//            System.out.println("Back Propagate " + k);
-//
-//            System.out.println(Arrays.deepToString(layers[i+1].getLayer()));
-//            System.out.println(Arrays.deepToString(transposedWeights));
-//
-//            System.out.println(multiple.length);
-//            System.out.println(activateDerivation.length);
-
             this.batchDeltas[k][i] = MatrixMath.hadamard(multiple, activateDerivation);
         }
     }
@@ -137,7 +126,41 @@ public class Network {
             backPropagate(i);
         }
 
-        // TODO adjust weights
+        gradientDescent(inputBatch);
+    }
+
+    public void gradientDescent(double[][] inputBatch) {
+
+        for (int i = layers.length - 1; i >= 0; i--) {
+
+            int[] dims = Utils.getDimensions(layers[i].getWeights());
+
+            double[][] avgChange = Utils.initializeMatrix(dims[0], dims[1], false);
+            double[] avgChangeBias = Utils.initializeVector(dims[0], null);
+
+            for (int j = 0; j < inputBatch.length; j++) {
+
+                double[] prevLayerResult;
+
+                if (i == 0) {
+                    prevLayerResult = activate(inputBatch[j]);
+                } else {
+                    prevLayerResult = activate(batchResults[j][i - 1]);
+                }
+
+                avgChange = MatrixMath.sum(avgChange, MatrixMath.multiply(batchDeltas[j][i], prevLayerResult));
+                avgChangeBias = MatrixMath.sum(avgChangeBias, batchDeltas[j][i]);
+            }
+
+            double[][] change = MatrixMath.multiply(-this.learningRate / (double) inputBatch.length, avgChange);
+            double[][] newWeights = MatrixMath.sum(layers[i].getWeights(), change);
+            layers[i].setWeights(newWeights);
+
+            double[] changeBias = MatrixMath.multiply(-this.learningRate / (double) inputBatch.length, avgChangeBias);
+            double[] newBias = MatrixMath.sum(layers[i].getBias(), changeBias);
+            layers[i].setBias(newBias);
+
+        }
     }
 
     public double[] softmax(double[] input) {

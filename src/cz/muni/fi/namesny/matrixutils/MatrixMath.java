@@ -63,6 +63,42 @@ public class MatrixMath {
 
     }
 
+    public static double[][] multiply(double[] vectorA, double[] vectorB) {
+
+        double[][] result = new double[vectorA.length][vectorB.length];
+
+        for (int i = 0; i < vectorA.length; i++) {
+            for (int j = 0; j < vectorB.length; j++) {
+                result[i][j] = vectorA[i] * vectorB[j];
+            }
+        }
+
+        return  result;
+    }
+
+    public static double[][] multiply(double scalar, double[][] matrix) {
+        int[] dims = Utils.getDimensions(matrix);
+        double[][] result = new double[dims[0]][dims[1]];
+
+        for (int i = 0; i < dims[0]; i++) {
+            for (int j = 0; j < dims[1]; j++) {
+                result[i][j] = matrix[i][j] * scalar;
+            }
+        }
+
+        return result;
+    }
+
+    public static double[] multiply(double scalar, double[] vector) {
+        double[] result = new double[vector.length];
+
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = vector[i] * scalar;
+        }
+
+        return result;
+    }
+
     /**
      * Sums two matrices
      * @param matrixA
@@ -181,6 +217,5 @@ public class MatrixMath {
 
         return resultMatrix;
     }
-
 
 }

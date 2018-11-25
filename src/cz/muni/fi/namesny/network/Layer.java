@@ -5,28 +5,28 @@ import cz.muni.fi.namesny.matrixutils.Utils;
 
 public class Layer {
 
-    private double[][] layer;
+    private double[][] weights;
     private double[] bias;
 
     public Layer(int numNeurons, int inputSize) {
-        this.setLayer(Utils.initializeMatrix(numNeurons, inputSize, true));
+        this.setWeights(Utils.initializeMatrix(numNeurons, inputSize, true));
         this.setBias(Utils.initializeVector(numNeurons, null));
     }
 
     public double[] compute(double[] inputs) {
-        return MatrixMath.sum(MatrixMath.multiply(getLayer(), inputs), getBias());
+        return MatrixMath.sum(MatrixMath.multiply(getWeights(), inputs), getBias());
     }
 
     public double[][] compute(double[][] inputs) {
-        return MatrixMath.sum(MatrixMath.multiply(getLayer(), inputs), getBias());
+        return MatrixMath.sum(MatrixMath.multiply(getWeights(), inputs), getBias());
     }
 
-    public double[][] getLayer() {
-        return layer;
+    public double[][] getWeights() {
+        return weights;
     }
 
-    public void setLayer(double[][] layer) {
-        this.layer = layer;
+    public void setWeights(double[][] weights) {
+        this.weights = weights;
     }
 
     public double[] getBias() {

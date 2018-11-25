@@ -21,7 +21,8 @@ public class Main {
 
         Network network = new Network(networkLayers,
                 activationFunction,
-                activationDerivative);
+                activationDerivative,
+                0.001d);
 
         //double[][] input = {{1.0d, 1.0d, 0.0d, 0.0d}, {1.0d, 0.0d, 1.0d, 0.0d}};
 
