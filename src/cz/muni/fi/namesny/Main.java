@@ -23,9 +23,16 @@ public class Main {
                 activationFunction,
                 activationDerivative);
 
-        double[] input = {1.0d, 0.0d};
-        double[] result = network.softmax(network.feedForward(input));
+        //double[][] input = {{1.0d, 1.0d, 0.0d, 0.0d}, {1.0d, 0.0d, 1.0d, 0.0d}};
 
-        System.out.println(Arrays.toString(result));
+        double[][] batch = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
+        double[][] actual = {{0.0d}, {1.0d}, {1.0d}, {0.0d}};
+
+        network.batchTrain(batch, actual);
+        // System.out.println(Arrays.deepToString(result));
+
+//        double[] input = {1.0d, 1.0d};
+//        double[] result = network.feedForward(input);
+//        System.out.println(Arrays.toString(result));
     }
 }
