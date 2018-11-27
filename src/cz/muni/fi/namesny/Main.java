@@ -1,8 +1,9 @@
 package cz.muni.fi.namesny;
 
-import cz.muni.fi.namesny.network.ActivationDerivative;
-import cz.muni.fi.namesny.network.ActivationFunction;
+import cz.muni.fi.namesny.network.IActivate;
+import cz.muni.fi.namesny.network.Layer;
 import cz.muni.fi.namesny.network.Network;
+import cz.muni.fi.namesny.network.SigmoidActivation;
 
 import java.util.Arrays;
 
@@ -12,28 +13,32 @@ public class Main {
 
         int[] networkLayers = {2,2,1};
 
-        ActivationFunction activationFunction = (x) -> 1.0d / (1.0d + Math.exp(-x));
+        IActivate activate = new SigmoidActivation();
 
-        ActivationDerivative activationDerivative = (x) -> {
-            double a = activationFunction.compute(x);
-            return a * (1.0d - a);
-        };
-
-        Network network = new Network(networkLayers,
-                activationFunction,
-                activationDerivative,
-                0.001d);
+        Network network = new Network(networkLayers, activate,0.01d);
 
         //double[][] input = {{1.0d, 1.0d, 0.0d, 0.0d}, {1.0d, 0.0d, 1.0d, 0.0d}};
 
         double[][] batch = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
         double[][] actual = {{0.0d}, {1.0d}, {1.0d}, {0.0d}};
+        double[] input = {1.0d, 1.0d};
 
-        network.batchTrain(batch, actual);
-        // System.out.println(Arrays.deepToString(result));
+        System.out.println(Arrays.deepToString(batch));
+        System.out.println(Arrays.deepToString(actual));
 
-//        double[] input = {1.0d, 1.0d};
-//        double[] result = network.feedForward(input);
-//        System.out.println(Arrays.toString(result));
+        //int epochs = Integer.MAX_VALUE;
+        int epochs = 1;
+
+        for (int i = 0; i < epochs; i++) {
+            System.out.println("Epoch " + i + ":");
+            network.batchTrain(batch, actual);
+            System.out.println("1 xor 1 guess: " + Arrays.toString(network.guess(input)));
+            System.out.println("Network weights:");
+            for (Layer layer :
+                    network.getLayers()) {
+                System.out.println(Arrays.deepToString(layer.getWeights()));
+            }
+            System.out.println();
+        }
     }
 }
