@@ -73,17 +73,17 @@ public class Network {
                             layerActivations[i]
                     )
             );
-
-
         }
     }
 
-    public void batchTrain(double[][] inputBatch, double[][] target) {
+    private double batchTrain(double[][] inputBatch, double[][] target, int start, int end) {
 
         // Initialize deltas
 
         deltaBiases = new double[networkLength][];
         deltaWeights = new double[networkLength][][];
+
+        double totalError = 0;
 
         for (int i = 0; i < networkLength; i++) {
             deltaBiases[i] = new double[layers[i].getLayerSize()];
@@ -99,7 +99,7 @@ public class Network {
 
         // Batch train
 
-        for (int i = 0; i < inputBatch.length; i++) {
+        for (int i = start; i < end; i++) {
 
             double[] input = inputBatch[i];
 
@@ -136,6 +136,34 @@ public class Network {
         }
 
         adjustWeights(inputBatch.length);
+        return totalError;
+    }
+
+    public void train(double[][] dataset, double[][] targets, Integer batchSize) {
+
+        if (batchSize == null || batchSize > dataset.length) {
+            batchSize = dataset.length;
+        }
+
+        int epoch = 0;
+
+        while (epoch < 100000){
+
+            System.out.println("Epoch " + epoch + ":");
+
+            int i = 0;
+            while (i < dataset.length) {
+                int batchStart = i;
+                int batchEnd = i + batchSize;
+
+                batchTrain(dataset, targets, batchStart, batchEnd);
+                i += batchSize;
+            }
+
+            epoch++;
+        }
+
+
     }
 
     private void adjustWeights(int batchSize) {
