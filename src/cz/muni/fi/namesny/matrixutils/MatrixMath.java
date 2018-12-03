@@ -77,6 +77,7 @@ public class MatrixMath {
     }
 
     public static double[][] multiply(double scalar, double[][] matrix) {
+
         int[] dims = Utils.getDimensions(matrix);
         double[][] result = new double[dims[0]][dims[1]];
 
@@ -192,7 +193,7 @@ public class MatrixMath {
      * @param vectorB
      * @return the difference of two vectors
      */
-    public static double[] substract(double[] vectorA, double[] vectorB) {
+    public static double[] subtract(double[] vectorA, double[] vectorB) {
 
         if (vectorA.length != vectorB.length) {
             throw new IllegalArgumentException("Vector lengths do not match");
@@ -216,6 +217,16 @@ public class MatrixMath {
                 resultMatrix[j][i] = matrix[i][j];
 
         return resultMatrix;
+    }
+
+    public static double[] vectorMap(double[] vector, MapFunction function) {
+        double[] result = new double[vector.length];
+
+        for (int i = 0; i < vector.length; i++) {
+            result[i] = function.compute(vector[i]);
+        }
+
+        return result;
     }
 
 }

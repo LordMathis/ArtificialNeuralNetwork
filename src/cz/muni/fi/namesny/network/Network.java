@@ -3,33 +3,29 @@ package cz.muni.fi.namesny.network;
 import cz.muni.fi.namesny.matrixutils.MatrixMath;
 import cz.muni.fi.namesny.matrixutils.Utils;
 
-import java.util.Arrays;
-
 public class Network {
 
     private Layer[] layers;
     private IActivate activate;
     private double learningRate;
+    private int networkLength;
 
-    private double[][][] batchResults;
-    private double[][][] batchDeltas;
+    private double[][] layerResults;
+    private double[][] layerActivations;
+    private double[][][] deltaWeights;
+    private double[][] deltaBiases;
 
     public Network(int[] layerSizes,
                    IActivate activate,
                    double learningRate) {
 
         this.layers = new Layer[layerSizes.length - 1];
+        this.networkLength = this.layers.length;
         this.activate = activate;
         this.learningRate = learningRate;
 
-
-        int prevLayerSize = layerSizes[0];
-        int layerSize;
         for (int i = 1; i < layerSizes.length; i++) {
-
-            layerSize = layerSizes[i];
-            this.getLayers()[i - 1] = new Layer(layerSize, prevLayerSize);
-            prevLayerSize = layerSize;
+            this.layers[i - 1] = new Layer(layerSizes[i], layerSizes[i-1]);
         }
     }
 
@@ -44,28 +40,114 @@ public class Network {
     private double[] feedForward(double[] inputs, int k) {
 
         double[] nextInputs = inputs;
-        double[] layerResult;
 
-        for (int i = 0; i < getLayers().length; i++) {
-            layerResult = getLayers()[i].compute(nextInputs);
-            batchResults[k][i] = layerResult;
-            nextInputs = activate(layerResult);
+        for (int i = 0; i < networkLength; i++) {
+            layerResults[i] = getLayers()[i].compute(nextInputs);
+            layerActivations[i + 1] = activate(layerResults[i]);
+            nextInputs = layerActivations[i + 1];
         }
 
         return nextInputs;
     }
 
-    private void backPropagate(int k) {
+    private void backPropagate(double[] delta) {
 
-        for (int i = getLayers().length - 2; i >= 0; i--) {
+        for (int i = networkLength - 2; i >= 0; i--) {
 
-            batchDeltas[k][i] = MatrixMath.hadamard(
+            delta = MatrixMath.hadamard(
                     MatrixMath.multiply(
-                            MatrixMath.transpose(getLayers()[i + 1].getWeights()),
-                            batchDeltas[k][i + 1]),
-                    activateDerivation(batchResults[k][i])
+                            MatrixMath.transpose(layers[i + 1].getWeights()),
+                            delta),
+                    activateDerivation(layerResults[i])
             );
 
+            deltaBiases[i] = MatrixMath.sum(
+                    deltaBiases[i],
+                    delta
+            );
+
+            deltaWeights[i] = MatrixMath.sum(
+                    deltaWeights[i],
+                    MatrixMath.multiply(
+                            delta,
+                            layerActivations[i]
+                    )
+            );
+
+
+        }
+    }
+
+    public void batchTrain(double[][] inputBatch, double[][] target) {
+
+        // Initialize deltas
+
+        deltaBiases = new double[networkLength][];
+        deltaWeights = new double[networkLength][][];
+
+        for (int i = 0; i < networkLength; i++) {
+            deltaBiases[i] = new double[layers[i].getLayerSize()];
+
+            int inputSize;
+            if (i == 0) {
+                inputSize = inputBatch[0].length;
+            } else {
+                inputSize = getLayers()[i - 1].getWeights().length;
+            }
+            deltaWeights[i] = new double[layers[i].getLayerSize()][inputSize];
+        }
+
+        // Batch train
+
+        for (int i = 0; i < inputBatch.length; i++) {
+
+            double[] input = inputBatch[i];
+
+            layerResults = new double[networkLength][];
+            layerActivations = new double[networkLength + 1][];
+
+            layerActivations[0] = input;
+
+            for (int j = 0; j < networkLength; j++) {
+                layerResults[j] = new double[layers[j].getLayerSize()];
+                layerActivations[j + 1] = new double[layers[j].getLayerSize()];
+            }
+
+            double[] prediction = feedForward(input, i);
+
+            double[] delta = MatrixMath.hadamard(
+                    costDerivative(prediction, target[i]),
+                    activateDerivation(layerResults[layerResults.length - 1]));
+
+            deltaBiases[deltaBiases.length - 1] = MatrixMath.sum(
+                    deltaBiases[deltaBiases.length - 1],
+                    delta
+            );
+
+            deltaWeights[deltaWeights.length - 1] = MatrixMath.sum(
+                    deltaWeights[deltaWeights.length - 1],
+                    MatrixMath.multiply(
+                            delta,
+                            layerActivations[layerActivations.length - 2]
+                    )
+            );
+
+            backPropagate(delta);
+        }
+
+        adjustWeights(inputBatch.length);
+    }
+
+    private void adjustWeights(int batchSize) {
+        for (int i = getLayers().length - 1; i >= 0; i--) {
+
+            double[][] change = MatrixMath.multiply((-1 * this.learningRate) / (double) batchSize, deltaWeights[i]);
+            double[][] newWeights = MatrixMath.sum(getLayers()[i].getWeights(), change);
+            getLayers()[i].setWeights(newWeights);
+
+            double[] changeBias = MatrixMath.multiply((-1 * this.learningRate) / (double) batchSize, deltaBiases[i]);
+            double[] newBias = MatrixMath.sum(getLayers()[i].getBias(), changeBias);
+            getLayers()[i].setBias(newBias);
         }
     }
 
@@ -91,77 +173,23 @@ public class Network {
         return result;
     }
 
-    public void batchTrain(double[][] inputBatch, double[][] actual) {
+    public void printNetwork() {
+        for (int i = 0; i < this.getLayers().length; i++) {
 
-        this.batchResults = new double[inputBatch.length][getLayers().length][];
-        this.batchDeltas = new double[inputBatch.length][getLayers().length][];
+            System.out.println("Layer " + i + ":");
+            double[][] layerWeights = this.getLayers()[i].getWeights();
+            double[] layerBias = this.getLayers()[i].getBias();
 
-        for (int i = 0; i < inputBatch.length; i++) {
-
-            double[] prediction = feedForward(inputBatch[i], i);
-            double[] errorVector = costDerivative(prediction, actual[i]);
-            System.out.println("Input: " + Arrays.toString(inputBatch[i]));
-            System.out.println("Prediction: " + Arrays.toString(prediction));
-            System.out.println("Error vector" + Arrays.toString(errorVector));
-            double[] activationsDer = activateDerivation(prediction);
-
-            batchDeltas[i][getLayers().length - 1] = MatrixMath.hadamard(errorVector, activationsDer);
-
-            backPropagate(i);
-        }
-
-        gradientDescent(inputBatch);
-    }
-
-    private void gradientDescent(double[][] inputBatch) {
-
-        for (int i = getLayers().length - 1; i >= 0; i--) {
-
-            int[] dims = Utils.getDimensions(getLayers()[i].getWeights());
-
-            double[][] avgChange = Utils.initializeMatrix(dims[0], dims[1], false);
-            double[] avgChangeBias = Utils.initializeVector(dims[0], null);
-
-            for (int j = 0; j < inputBatch.length; j++) {
-
-                double[] prevLayerResult;
-
-                if (i == 0) {
-                    prevLayerResult = activate(inputBatch[j]);
-                } else {
-                    prevLayerResult = activate(batchResults[j][i - 1]);
+            for (int j = 0; j < layerWeights.length; j++) {
+                System.out.print("[");
+                for (int k = 0; k < layerWeights[j].length; k++) {
+                    System.out.print(layerWeights[j][k] + " ");
                 }
-
-                avgChange = MatrixMath.sum(avgChange, MatrixMath.multiply(batchDeltas[j][i], prevLayerResult));
-                avgChangeBias = MatrixMath.sum(avgChangeBias, batchDeltas[j][i]);
+                System.out.print("] [" + layerBias[j] + "]");
+                System.out.println();
             }
-
-            double[][] change = MatrixMath.multiply(-this.learningRate / (double) inputBatch.length, avgChange);
-            double[][] newWeights = MatrixMath.sum(getLayers()[i].getWeights(), change);
-            getLayers()[i].setWeights(newWeights);
-
-            double[] changeBias = MatrixMath.multiply(-this.learningRate / (double) inputBatch.length, avgChangeBias);
-            double[] newBias = MatrixMath.sum(getLayers()[i].getBias(), changeBias);
-            getLayers()[i].setBias(newBias);
-
         }
-    }
-
-    public double[] softmax(double[] input) {
-
-        double totalInput = 0;
-
-        for (double in : input) {
-            totalInput += Math.exp(in);
-        }
-
-        double[] result = new double[input.length];
-
-        for (int i = 0; i < input.length; i++) {
-            result[i] = Math.exp(input[i]) / totalInput;
-        }
-
-        return result;
+        System.out.println();
     }
 
     public double quadraticCost(double[] predicted, double[] actual) {
@@ -180,8 +208,8 @@ public class Network {
 
     }
 
-    public double[] costDerivative(double[] predicted, double[] actual) {
-        return MatrixMath.substract(predicted, actual);
+    public double[] costDerivative(double[] predicted, double[] target) {
+        return MatrixMath.subtract(predicted, target);
     }
 
     public Layer[] getLayers() {
