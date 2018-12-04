@@ -147,25 +147,6 @@ public class MatrixMath {
         return result;
     }
 
-    public static double[][] sum(double[][] matrix, double[] vector) {
-
-        int[] matrixDims = Utils.getDimensions(matrix);
-
-        if (matrixDims[0] != vector.length) {
-            throw new IllegalArgumentException("Matrix and vector dimensions do not match");
-        }
-
-        double[][] result = new double[matrixDims[0]][matrixDims[1]];
-
-        for (int i = 0; i < matrixDims[1]; i++) {
-            for (int j = 0; j < matrixDims[0]; j++) {
-                result[j][i] = matrix[j][i] + vector[j];
-            }
-        }
-
-        return result;
-    }
-
     /**
      * Implements elementwise vector multiplication
      * @param vectorA
@@ -218,15 +199,4 @@ public class MatrixMath {
 
         return resultMatrix;
     }
-
-    public static double[] vectorMap(double[] vector, MapFunction function) {
-        double[] result = new double[vector.length];
-
-        for (int i = 0; i < vector.length; i++) {
-            result[i] = function.compute(vector[i]);
-        }
-
-        return result;
-    }
-
 }
