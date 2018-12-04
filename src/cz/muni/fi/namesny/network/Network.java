@@ -7,6 +7,7 @@ public class Network {
 
     private Layer[] layers;
     private IActivate activate;
+    private ICost cost;
     private double learningRate;
     private int networkLength;
 
@@ -17,11 +18,13 @@ public class Network {
 
     public Network(int[] layerSizes,
                    IActivate activate,
+                   ICost cost,
                    double learningRate) {
 
         this.layers = new Layer[layerSizes.length - 1];
         this.networkLength = this.layers.length;
         this.activate = activate;
+        this.cost = cost;
         this.learningRate = learningRate;
 
         for (int i = 1; i < layerSizes.length; i++) {
@@ -32,7 +35,7 @@ public class Network {
     public double[] guess(double[] input) {
         double[] nextInputs = input;
 
-        for (int i = 0; i < getLayers().length; i++) nextInputs = activate(getLayers()[i].compute(nextInputs));
+        for (int i = 0; i < getLayers().length; i++) nextInputs = activate.getActivation(getLayers()[i].compute(nextInputs));
 
         return nextInputs;
     }
@@ -43,7 +46,7 @@ public class Network {
 
         for (int i = 0; i < networkLength; i++) {
             layerResults[i] = getLayers()[i].compute(nextInputs);
-            layerActivations[i + 1] = activate(layerResults[i]);
+            layerActivations[i + 1] = activate.getActivation(layerResults[i]);
             nextInputs = layerActivations[i + 1];
         }
 
@@ -58,7 +61,7 @@ public class Network {
                     MatrixMath.multiply(
                             MatrixMath.transpose(layers[i + 1].getWeights()),
                             delta),
-                    activateDerivation(layerResults[i])
+                    activate.getDerivative(layerResults[i])
             );
 
             deltaBiases[i] = MatrixMath.sum(
@@ -76,7 +79,7 @@ public class Network {
         }
     }
 
-    private double batchTrain(double[][] inputBatch, double[][] target, int start, int end) {
+    private double batchTrain(double[][] inputBatch, double[][] targets, int start, int end) {
 
         // Initialize deltas
 
@@ -115,9 +118,9 @@ public class Network {
 
             double[] prediction = feedForward(input, i);
 
-            double[] delta = MatrixMath.hadamard(
-                    costDerivative(prediction, target[i]),
-                    activateDerivation(layerResults[layerResults.length - 1]));
+            double[] delta = cost.getDelta(prediction,
+                    targets[i],
+                    layerActivations[layerActivations.length - 1]);
 
             deltaBiases[deltaBiases.length - 1] = MatrixMath.sum(
                     deltaBiases[deltaBiases.length - 1],
@@ -179,28 +182,6 @@ public class Network {
         }
     }
 
-    private double[] activate(double[] input) {
-
-        double[] result = new double[input.length];
-
-        for (int i = 0; i < input.length; i++) {
-            result[i] = activate.getActivation(input[i]);
-        }
-
-        return result;
-    }
-
-    private double[] activateDerivation(double[] input) {
-
-        double[] result = new double[input.length];
-
-        for (int i = 0; i < input.length; i++) {
-            result[i] = activate.getDerivative(input[i]);
-        }
-
-        return result;
-    }
-
     public void printNetwork() {
         for (int i = 0; i < this.getLayers().length; i++) {
 
@@ -218,26 +199,6 @@ public class Network {
             }
         }
         System.out.println();
-    }
-
-    public double quadraticCost(double[] predicted, double[] actual) {
-
-        double cost = 0.0d;
-
-        if (predicted.length != actual.length) {
-            throw new IllegalArgumentException("Vector lengths do not match");
-        }
-
-        for (int i = 0; i < predicted.length; i++) {
-            cost += Math.pow(actual[i] - predicted[i], 2);
-        }
-
-        return cost/2.0d;
-
-    }
-
-    public double[] costDerivative(double[] predicted, double[] target) {
-        return MatrixMath.subtract(predicted, target);
     }
 
     public Layer[] getLayers() {

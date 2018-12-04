@@ -1,8 +1,6 @@
 package cz.muni.fi.namesny;
 
-import cz.muni.fi.namesny.network.IActivate;
-import cz.muni.fi.namesny.network.Network;
-import cz.muni.fi.namesny.network.SigmoidActivation;
+import cz.muni.fi.namesny.network.*;
 
 import java.util.Arrays;
 
@@ -13,8 +11,9 @@ public class Main {
         int[] networkLayers = {2,2,1};
 
         IActivate activate = new SigmoidActivation();
+        ICost cost = new QuadraticCost(activate);
 
-        Network network = new Network(networkLayers, activate,0.1d);
+        Network network = new Network(networkLayers, activate, cost, 0.1d);
         network.printNetwork();
 
         double[][] batch = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
