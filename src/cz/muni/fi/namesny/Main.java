@@ -11,7 +11,8 @@ public class Main {
         int[] networkLayers = {2,2,1};
 
         IActivate activate = new SigmoidActivation();
-        ICost cost = new QuadraticCost(activate);
+        //ICost cost = new QuadraticCost(activate);
+        ICost cost = new CrossEntropyCost();
 
         Network network = new Network(networkLayers, activate, cost, 0.1d);
         network.printNetwork();
