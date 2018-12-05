@@ -36,7 +36,7 @@ public class MNISTLoader {
             double[] dataRow = new double[row.length];
 
             for (int i = 0; i < row.length; i++) {
-                dataRow[i] = Double.parseDouble(row[i]);
+                dataRow[i] = Double.parseDouble(row[i]) / 255d;
             }
 
             dataList.add(dataRow);

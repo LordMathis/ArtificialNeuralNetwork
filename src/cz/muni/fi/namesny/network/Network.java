@@ -2,6 +2,7 @@ package cz.muni.fi.namesny.network;
 
 import cz.muni.fi.namesny.matrixutils.MatrixMath;
 import cz.muni.fi.namesny.matrixutils.Utils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Network {
 
@@ -150,7 +151,7 @@ public class Network {
 
         int epoch = 0;
 
-        while (epoch < 30){
+        while (epoch < 5){
 
             System.out.println("Epoch " + epoch + ":");
 
@@ -165,8 +166,23 @@ public class Network {
 
             epoch++;
         }
+    }
 
+    public double accuracy(double[][] testData, double[][] testLabels) {
 
+        int totalCorrect = 0;
+
+        for (int i = 0; i < testData.length; i++) {
+
+            int preditction = Utils.argmax(guess(testData[i]));
+            int label = Utils.argmax(testLabels[i]);
+
+            if (preditction == label) {
+                totalCorrect++;
+            }
+        }
+
+        return totalCorrect / testData.length;
     }
 
     private void adjustWeights(int batchSize) {
@@ -204,4 +220,5 @@ public class Network {
     public Layer[] getLayers() {
         return layers;
     }
+
 }

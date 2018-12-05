@@ -24,25 +24,28 @@ public class Main {
         double[][] trainingData = loader.getData();
         double[][] trainingLabels = loader.getLabels();
 
-        System.out.println(Arrays.toString(Utils.getDimensions(trainingData)));
-        System.out.println(Arrays.toString(Utils.getDimensions(trainingLabels)));
+        loader.load(testDataFile, testLabelsFile);
+        double[][] testData = loader.getData();
+        double[][] testLabels = loader.getLabels();
 
         IActivate activate = new SigmoidActivation();
-        //ICost cost = new QuadraticCost(activate);
-        ICost cost = new CrossEntropyCost();
+        ICost cost = new QuadraticCost(activate);
+        //ICost cost = new CrossEntropyCost();
 
         Network network = new Network(networkLayers, activate, cost, 0.1d);
 
 //        double[][] batch = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
 //        double[][] targets = {{0.0d}, {1.0d}, {1.0d}, {0.0d}};
 
-        network.train(trainingData, trainingLabels, 100);
+        Utils.printVector(network.guess(testData[0]));
+        Utils.printVector(testLabels[0]);
 
-        System.out.println(Arrays.toString(network.guess(trainingData[0])));
-        System.out.println(Arrays.toString(trainingLabels[0]));
+        network.train(trainingData, trainingLabels, 10);
 
-        loader.load(testDataFile, testLabelsFile);
-        double[][] testData = loader.getData();
-        double[][] testLabels = loader.getLabels();
+        System.out.println();
+        Utils.printVector(network.guess(testData[0]));
+        Utils.printVector(testLabels[0]);
+
+        System.out.println(network.accuracy(testData, testLabels));
     }
 }

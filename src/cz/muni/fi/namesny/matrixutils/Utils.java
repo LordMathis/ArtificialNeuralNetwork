@@ -90,5 +90,17 @@ public class Utils {
         }
     }
 
+    public static int argmax(double[] vector) {
+        int max = 0;
+
+        for (int i = 0; i < vector.length; i++) {
+            if (vector[i] > vector[max]) {
+                max = i;
+            }
+        }
+
+        return max;
+    }
+
 
 }
