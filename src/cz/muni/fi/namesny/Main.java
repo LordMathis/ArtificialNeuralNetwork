@@ -1,7 +1,9 @@
 package cz.muni.fi.namesny;
 
+import cz.muni.fi.namesny.dataloaders.MNISTLoader;
 import cz.muni.fi.namesny.network.*;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class Main {
@@ -9,6 +11,18 @@ public class Main {
     public static void main(String[] args) {
 
         int[] networkLayers = {2,2,1};
+
+        File dataFile = new File("MNIST_DATA/mnist_train_vectors.csv");
+        File labelFile = new File("MNIST_DATA/mnist_train_labels.csv");
+
+
+        MNISTLoader loader = new MNISTLoader();
+        loader.load(dataFile, labelFile);
+        double[][] trainingData = loader.getData();
+        double[][] trainingLabels = loader.getLabels();
+
+        System.out.println(trainingData.length);
+        System.out.println(trainingLabels.length);
 
         IActivate activate = new SigmoidActivation();
         //ICost cost = new QuadraticCost(activate);
@@ -22,8 +36,8 @@ public class Main {
 
         //double[][] targets = {{1.0d}, {0.0d}, {0.0d}, {0.0d}};
 
-        network.train(batch, targets, null);
-        network.printNetwork();
+        //network.train(batch, targets, null);
+        //network.printNetwork();
 
         System.out.println(Arrays.toString(network.guess(new double[]{1.0d, 1.0d})));
         System.out.println(Arrays.toString(network.guess(new double[]{1.0d, 0.0d})));
