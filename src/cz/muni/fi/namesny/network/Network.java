@@ -150,7 +150,7 @@ public class Network {
 
         int epoch = 0;
 
-        while (epoch < 100000){
+        while (epoch < 30){
 
             System.out.println("Epoch " + epoch + ":");
 

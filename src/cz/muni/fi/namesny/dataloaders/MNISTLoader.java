@@ -59,7 +59,7 @@ public class MNISTLoader {
         String line;
         while ((line = br.readLine()) != null) {
 
-            double[] labelRow = new double[9];
+            double[] labelRow = new double[10];
             int label = Integer.parseInt(line);
 
             for (int i = 0; i < labelRow.length; i++) {
