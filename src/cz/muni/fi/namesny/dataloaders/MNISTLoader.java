@@ -63,7 +63,7 @@ public class MNISTLoader {
             int label = Integer.parseInt(line);
 
             for (int i = 0; i < labelRow.length; i++) {
-                if (i == label - 1) {
+                if (i == label) {
                     labelRow[i] = 1.0d;
                 } else {
                     labelRow[i] = 0.0d;

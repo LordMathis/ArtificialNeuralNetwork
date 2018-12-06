@@ -29,23 +29,27 @@ public class Main {
         double[][] testLabels = loader.getLabels();
 
         IActivate activate = new SigmoidActivation();
-        ICost cost = new QuadraticCost(activate);
-        //ICost cost = new CrossEntropyCost();
+        //ICost quadraticCost = new QuadraticCost(activate);
+        ICost entropyCost = new CrossEntropyCost();
 
-        Network network = new Network(networkLayers, activate, cost, 0.1d);
-
-//        double[][] batch = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
-//        double[][] targets = {{0.0d}, {1.0d}, {1.0d}, {0.0d}};
-
-        Utils.printVector(network.guess(testData[0]));
-        Utils.printVector(testLabels[0]);
-
-        network.train(trainingData, trainingLabels, 10);
+        Network network = new Network(networkLayers, activate, entropyCost, 0.5d);
 
         System.out.println();
-        Utils.printVector(network.guess(testData[0]));
-        Utils.printVector(testLabels[0]);
-
         System.out.println(network.accuracy(testData, testLabels));
+
+//        double[][] trainingData = {{1.0d, 1.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}, {0.0d, 0.0d}};
+//        double[][] trainingLabels = {{0.0d, 1.0d}, {1.0d, 0.0d}, {1.0d, 0.0d}, {0.0d, 1.0d}};
+
+//        Utils.printVector(network.guess(testData[0]));
+//        Utils.printVector(testLabels[0]);
+
+        final long startTime = System.currentTimeMillis();
+        network.train(trainingData, trainingLabels, 100, 30);
+        final long endTime = System.currentTimeMillis();
+
+        System.out.println("Total execution time: " + (endTime - startTime) / 60000 + " minutes");
+        System.out.println();
+        System.out.println(network.accuracy(testData, testLabels));
+
     }
 }

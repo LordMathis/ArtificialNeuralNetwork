@@ -2,7 +2,6 @@ package cz.muni.fi.namesny.network;
 
 import cz.muni.fi.namesny.matrixutils.MatrixMath;
 import cz.muni.fi.namesny.matrixutils.Utils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Network {
 
@@ -41,7 +40,7 @@ public class Network {
         return nextInputs;
     }
 
-    private double[] feedForward(double[] inputs, int k) {
+    private double[] feedForward(double[] inputs) {
 
         double[] nextInputs = inputs;
 
@@ -80,7 +79,7 @@ public class Network {
         }
     }
 
-    private double batchTrain(double[][] inputBatch, double[][] targets, int start, int end) {
+    private void batchTrain(double[][] inputBatch, double[][] targets, int start, int end) {
 
         // Initialize deltas
 
@@ -117,7 +116,7 @@ public class Network {
                 layerActivations[j + 1] = new double[layers[j].getLayerSize()];
             }
 
-            double[] prediction = feedForward(input, i);
+            double[] prediction = feedForward(input);
 
             double[] delta = cost.getDelta(prediction,
                     targets[i],
@@ -140,10 +139,9 @@ public class Network {
         }
 
         adjustWeights(inputBatch.length);
-        return totalError;
     }
 
-    public void train(double[][] dataset, double[][] targets, Integer batchSize) {
+    public void train(double[][] dataset, double[][] targets, Integer batchSize, Integer epochs) {
 
         if (batchSize == null || batchSize > dataset.length) {
             batchSize = dataset.length;
@@ -151,19 +149,19 @@ public class Network {
 
         int epoch = 0;
 
-        while (epoch < 5){
+        while (epoch < epochs){
 
-            System.out.println("Epoch " + epoch + ":");
+            System.out.println("Epoch " + epoch);
 
             int i = 0;
             while (i < dataset.length) {
                 int batchStart = i;
                 int batchEnd = i + batchSize;
-
                 batchTrain(dataset, targets, batchStart, batchEnd);
                 i += batchSize;
             }
 
+            System.out.println("Training accuracy: " + accuracy(dataset, targets));
             epoch++;
         }
     }
@@ -182,10 +180,11 @@ public class Network {
             }
         }
 
-        return totalCorrect / testData.length;
+        return totalCorrect / (double) testData.length;
     }
 
     private void adjustWeights(int batchSize) {
+
         for (int i = getLayers().length - 1; i >= 0; i--) {
 
             double[][] change = MatrixMath.multiply((-1 * this.learningRate) / (double) batchSize, deltaWeights[i]);
