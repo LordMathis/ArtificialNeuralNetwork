@@ -1,14 +1,15 @@
-package cz.muni.fi.namesny.dataloaders;
+package cz.muni.fi.namesny.utils;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MNISTLoader {
+public class MNISTLoader implements IDataLoader {
 
     private double[][] data;
     private double[][] labels;
 
+    @Override
     public void load(File dataFile, File labelFile){
 
         try {
@@ -80,10 +81,12 @@ public class MNISTLoader {
 
     }
 
+    @Override
     public double[][] getData() {
         return data;
     }
 
+    @Override
     public double[][] getLabels() {
         return labels;
     }

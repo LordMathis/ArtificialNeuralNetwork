@@ -1,7 +1,7 @@
 package cz.muni.fi.namesny.network;
 
-import cz.muni.fi.namesny.matrixutils.MatrixMath;
-import cz.muni.fi.namesny.matrixutils.Utils;
+import cz.muni.fi.namesny.utils.MathUtils;
+import cz.muni.fi.namesny.utils.MatrixUtils;
 
 public class Layer {
 
@@ -10,14 +10,14 @@ public class Layer {
     private int layerSize;
 
     public Layer(int numNeurons, int inputSize) {
-        this.setWeights(Utils.initializeMatrix(numNeurons, inputSize, true));
+        this.setWeights(MatrixUtils.initializeMatrix(numNeurons, inputSize, true));
         this.layerSize = numNeurons;
-        this.setBias(Utils.initializeVector(numNeurons, null));
+        this.setBias(MatrixUtils.initializeVector(numNeurons, null));
     }
 
     public double[] compute(double[] inputs) {
-        return MatrixMath.sum(
-                MatrixMath.multiply(getWeights(), inputs),
+        return MathUtils.sum(
+                MathUtils.multiply(getWeights(), inputs),
                 getBias());
     }
 

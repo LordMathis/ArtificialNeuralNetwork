@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.matrixutils;
+package cz.muni.fi.namesny.utils;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  *
  */
-public class Utils {
+public class MatrixUtils {
 
     /**
      * Creates and initializes new matrix

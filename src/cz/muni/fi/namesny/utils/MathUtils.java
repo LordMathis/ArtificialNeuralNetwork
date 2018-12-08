@@ -1,11 +1,11 @@
-package cz.muni.fi.namesny.matrixutils;
+package cz.muni.fi.namesny.utils;
 
 import java.util.Arrays;
 
 /**
  *
  */
-public class MatrixMath {
+public class MathUtils {
 
     /**
      * Multiplies matrix with vector
@@ -15,7 +15,7 @@ public class MatrixMath {
      */
     public static double[] multiply(double[][] matrix, double[] vector) {
 
-        int[] dimsMatrix = Utils.getDimensions(matrix);
+        int[] dimsMatrix = MatrixUtils.getDimensions(matrix);
 
         if (dimsMatrix[1] != vector.length) {
             throw new IllegalArgumentException("Matrix and vector dimensions do not match");
@@ -42,14 +42,14 @@ public class MatrixMath {
      */
     public static double[][] multiply(double[][] matrixA, double[][] matrixB) {
 
-        int[] dimsA = Utils.getDimensions(matrixA);
-        int[] dimsB = Utils.getDimensions(matrixB);
+        int[] dimsA = MatrixUtils.getDimensions(matrixA);
+        int[] dimsB = MatrixUtils.getDimensions(matrixB);
 
         if (dimsA[1] != dimsB[0]) {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsB[1], false);
+        double[][] resultMatrix = MatrixUtils.initializeMatrix(dimsA[0], dimsB[1], false);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsB[1]; j++) {
@@ -78,7 +78,7 @@ public class MatrixMath {
 
     public static double[][] multiply(double scalar, double[][] matrix) {
 
-        int[] dims = Utils.getDimensions(matrix);
+        int[] dims = MatrixUtils.getDimensions(matrix);
         double[][] result = new double[dims[0]][dims[1]];
 
         for (int i = 0; i < dims[0]; i++) {
@@ -107,14 +107,14 @@ public class MatrixMath {
      * @return The sum of two matrices
      */
     public static double[][] sum(double[][] matrixA, double[][] matrixB) {
-        int[] dimsA = Utils.getDimensions(matrixA);
-        int[] dimsB = Utils.getDimensions(matrixB);
+        int[] dimsA = MatrixUtils.getDimensions(matrixA);
+        int[] dimsB = MatrixUtils.getDimensions(matrixB);
 
         if (!Arrays.equals(dimsA, dimsB)) {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = Utils.initializeMatrix(dimsA[0], dimsA[1], false);
+        double[][] resultMatrix = MatrixUtils.initializeMatrix(dimsA[0], dimsA[1], false);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsA[1]; j++) {
@@ -190,7 +190,7 @@ public class MatrixMath {
     }
 
     public static double[][] transpose(double[][] matrix) {
-        int[] dimensions = Utils.getDimensions(matrix);
+        int[] dimensions = MatrixUtils.getDimensions(matrix);
         double [][] resultMatrix = new double[dimensions[1]][dimensions[0]];
 
         for (int i = 0; i < dimensions[0]; i++)

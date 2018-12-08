@@ -1,6 +1,6 @@
 package cz.muni.fi.namesny.network;
 
-import cz.muni.fi.namesny.matrixutils.MatrixMath;
+import cz.muni.fi.namesny.utils.MathUtils;
 
 public class QuadraticCost implements ICost{
 
@@ -28,8 +28,8 @@ public class QuadraticCost implements ICost{
     @Override
     public double[] getDelta(double[] prediction, double[] target, double[] z) {
 
-        double[] delta = MatrixMath.hadamard(
-                MatrixMath.subtract(prediction, target),
+        double[] delta = MathUtils.hadamard(
+                MathUtils.subtract(prediction, target),
                 activate.getDerivative(z));
 
         return delta;
