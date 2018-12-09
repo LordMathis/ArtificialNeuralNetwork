@@ -19,14 +19,12 @@ public class Network {
 
     public Network(int[] layerSizes,
                    IActivate activate,
-                   ICost cost,
-                   double learningRate) {
+                   ICost cost) {
 
         this.layers = new Layer[layerSizes.length - 1];
         this.networkLength = this.layers.length;
         this.activate = activate;
         this.cost = cost;
-        this.learningRate = learningRate;
 
         for (int i = 1; i < layerSizes.length; i++) {
             this.layers[i - 1] = new Layer(layerSizes[i], layerSizes[i-1]);
@@ -142,11 +140,14 @@ public class Network {
 
     public void train(double[][] dataset,
                       double[][] targets,
+                      double learningRate,
                       Integer batchSize,
                       Integer epochs,
                       Double lambda,
                       Double momentum,
                       boolean monitorAccuracy) {
+
+        this.learningRate = learningRate;
 
         if (batchSize == null || batchSize > dataset.length) {
             batchSize = dataset.length;
@@ -187,6 +188,46 @@ public class Network {
         }
     }
 
+    private void adjustWeights(int batchSize, double lambda, double momentum) {
+
+        for (int i = getLayers().length - 1; i >= 0; i--) {
+
+            // Update momentum
+            momentums[i] = MathUtils.sum(
+                MathUtils.multiply(
+                        momentum,
+                        momentums[i]
+                ),
+                MathUtils.multiply(
+                        (-1 * this.learningRate) / (double) batchSize,
+                        deltaWeights[i])
+            );
+
+            double[][] regularization = MathUtils.multiply(
+                    1 - (((-1) * this.learningRate * lambda) / (double) batchSize),
+                    getLayers()[i].getWeights()
+            );
+
+            double[][] newWeights = MathUtils.sum(
+                    regularization,
+                    momentums[i]
+            );
+
+            getLayers()[i].setWeights(newWeights);
+
+            // Update Bias
+
+            double[] changeBias = MathUtils.multiply(
+                    (-1 * this.learningRate) / (double) batchSize,
+                    deltaBiases[i]);
+            double[] newBias = MathUtils.sum(getLayers()[i].getBias(), changeBias);
+
+            getLayers()[i].setBias(newBias);
+
+            // Update Moment
+        }
+    }
+
     public double accuracy(double[][] testData, double[][] testLabels) {
 
         int totalCorrect = 0;
@@ -195,10 +236,10 @@ public class Network {
 
             if (testLabels[0].length > 1) {
 
-                int preditction = MatrixUtils.argmax(guess(testData[i]));
+                int prediction = MatrixUtils.argmax(guess(testData[i]));
                 int label = MatrixUtils.argmax(testLabels[i]);
 
-                if (preditction == label) {
+                if (prediction == label) {
                     totalCorrect++;
                 }
             } else {
@@ -219,75 +260,6 @@ public class Network {
         }
 
         return totalCorrect / (double) testData.length;
-    }
-
-    private void adjustWeights(int batchSize, double lambda, double momentum) {
-
-        for (int i = getLayers().length - 1; i >= 0; i--) {
-
-            // Update Weights
-
-            double[][] change = MathUtils.multiply(
-                    (-1 * this.learningRate) / (double) batchSize,
-                    deltaWeights[i]);
-
-            double[][] regularization = MathUtils.multiply(
-                    (-1 * this.learningRate * lambda) / (double) batchSize,
-                    getLayers()[i].getWeights()
-            );
-
-            double[][] newWeights;
-
-            if (momentum == 0) {
-                if (lambda == 0) {
-
-                    newWeights =
-                            MathUtils.sum(getLayers()[i].getWeights(), change);
-
-                } else {
-
-                    newWeights = MathUtils.sum(
-                            MathUtils.sum(
-                                    getLayers()[i].getWeights(),
-                                    change),
-                            regularization);
-
-                }
-            } else {
-                newWeights = MathUtils.sum(
-                        momentums[i],
-                        MathUtils.sum(
-                                MathUtils.sum(
-                                        getLayers()[i].getWeights(),
-                                        change),
-                                regularization));
-            }
-
-            getLayers()[i].setWeights(newWeights);
-
-            // Update Bias
-
-            double[] changeBias = MathUtils.multiply(
-                    (-1 * this.learningRate) / (double) batchSize,
-                    deltaBiases[i]);
-            double[] newBias = MathUtils.sum(getLayers()[i].getBias(), changeBias);
-
-            getLayers()[i].setBias(newBias);
-
-            // Update Momentum
-
-            if (momentum > 0) {
-
-                momentums[i] = MathUtils.sum(
-                        momentums[i],
-                        MathUtils.multiply(
-                                momentum,
-                                deltaWeights[i]
-                        )
-                );
-
-            }
-        }
     }
 
     public void printNetwork() {

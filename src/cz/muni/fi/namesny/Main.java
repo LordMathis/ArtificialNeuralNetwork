@@ -6,7 +6,6 @@ import cz.muni.fi.namesny.utils.DataWrapper;
 import cz.muni.fi.namesny.utils.MNISTLoader;
 import cz.muni.fi.namesny.utils.MatrixUtils;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -21,10 +20,8 @@ public class Main {
     }
 
     public static void gridSearch(
-            double[][] trainingData,
-            double[][] trainingLabels,
-            double[][] validationData,
-            double[][] validationLabels,
+            DataWrapper trainingData,
+            DataWrapper validationData,
             int[] epochs,
             int[][] networkSizes,
             double[] learningRates,
@@ -43,14 +40,14 @@ public class Main {
                         for (double momentum: momentums) {
                             for (int epoch: epochs) {
 
-                                Network network = new Network(networkSize, new SigmoidActivation(), new CrossEntropyCost(), learningRate);
+                                Network network = new Network(networkSize, new SigmoidActivation(), new CrossEntropyCost());
 
                                 final long startTime = System.currentTimeMillis();
-                                network.train(trainingData, trainingLabels, batchSize, epoch, lambda, momentum, false);
+                                network.train(trainingData.getData(), trainingData.getLabels(), learningRate, batchSize, epoch, lambda, momentum, false);
                                 final long endTime = System.currentTimeMillis();
                                 long timeMins = (endTime - startTime) / 60000;
 
-                                double accuracy = network.accuracy(validationData, validationLabels);
+                                double accuracy = network.accuracy(validationData.getData(), validationData.getLabels());
 
                                 String res = Arrays.toString(networkSize) + "\t" + learningRate + "\t" + batchSize +
                                         "\t" + lambda + "\t" + momentum + "\t" + epoch + "\t" + timeMins + "\t" + accuracy + "\n";
@@ -74,20 +71,19 @@ public class Main {
         double[][] trainingData = {{1.0d, 0.0d}, {1.0d, 1.0d}, {0.0d, 0.0d}, {0.0d, 1.0d}};
         double[][] trainingLabels = {{1.0d}, {0.0d}, {0.0d}, {1.0d}};
 
-        Network network = new Network(networkLayers, new SigmoidActivation(), new CrossEntropyCost(), 0.001d);
+        Network network = new Network(networkLayers, new SigmoidActivation(), new CrossEntropyCost());
 
-        network.train(
-                trainingData,
-                trainingLabels,
-                null,
+        justTrain(
+                network,
+                new DataWrapper(trainingData, trainingLabels),
+                new DataWrapper(trainingData, trainingLabels),
+                0.01d,
                 100000,
-                10d,
+                 null,
+                0.0d,
                 0.0d,
                 false
         );
-
-        double acc = network.accuracy(trainingData, trainingLabels);
-        System.out.println(acc);
 
         MatrixUtils.printVector(network.guess(new double[]{0.0d, 0.0d}));
         MatrixUtils.printVector(network.guess(new double[]{0.0d, 1.0d}));
@@ -103,13 +99,41 @@ public class Main {
 
         // Smaller dataset
         DataWrapper subset = DataUtils.subset(dataWrapper.getData(), dataWrapper.getLabels(), 1000);
-        double[][] smallData = subset.getData();
-        double[][] smallLabels = subset.getLabels();
 
         // Smaller test set
         DataWrapper testSubset = DataUtils.subset(testDataWrapper.getData(), testDataWrapper.getLabels(), 100);
-        double[][] smallTestData = testSubset.getData();
-        double[][] smallTestLabels = testSubset.getLabels();
+
+
+//        Network network = new Network(new int[]{784, 50, 10}, new SigmoidActivation(), new CrossEntropyCost());
+//        justTrain(
+//                network,
+//                subset,
+//                testSubset,
+//                0.05,
+//                20,
+//                10,
+//                0.5,
+//                0.3,
+//                true);
+
+
+        int[][] networkSizes = {
+                {784, 30, 10}, {784, 50, 10}, {784, 100, 10}, {784, 30, 30, 10}, {784, 50, 30, 10},
+                {784, 50, 50, 10}, {784, 100, 50, 10}, {784, 100, 30, 10}, {784, 100, 100, 10}
+        };
+
+        try {
+            gridSearch(subset, testSubset,
+                    new int[] {10, 30},
+                    networkSizes,
+                    new double[] {0.01, 0.05, 0.1, 0.5, 1d, 5d},
+                    new int[] {10, 100, 1000},
+                    new double[] {0, 0.01, 0.1, 1, 10, 100},
+                    new double[] {0, 0.1, 0.5, 0.9},
+                    new File("gridSearch.tsv"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -119,12 +143,21 @@ public class Main {
         DataWrapper testDataWrapper = loadMnistTestData();
 
         DataWrapper zerosAndOnes = DataUtils.filter(dataWrapper.getData(), dataWrapper.getLabels(), Arrays.asList(0, 1));
-        double[][] zerosAndOnesData = zerosAndOnes.getData();
-        double[][] zerosAndOnesLabels = zerosAndOnes.getLabels();
 
         DataWrapper filtered = DataUtils.filter(testDataWrapper.getData(), testDataWrapper.getLabels(), Arrays.asList(0, 1));
-        double[][] zerosAndOnesTestData = filtered.getData();
-        double[][] zerosAndOnesTestLabels = filtered.getLabels();
+
+
+        Network network = new Network(new int[]{784, 50, 10}, new SigmoidActivation(), new CrossEntropyCost());
+        justTrain(
+                network,
+                zerosAndOnes,
+                filtered,
+                0.05,
+                20,
+                10,
+                0.5,
+                0.3,
+                true);
     }
 
 
@@ -149,69 +182,50 @@ public class Main {
     }
 
     public static void trainMNIST() {
+
+        DataWrapper mnist = loadMnistData();
+        DataWrapper mnistTest = loadMnistTestData();
+
         int[] networkLayers = {784, 50, 10};
 
-
-        /*
-        Test data
-         */
-
-        loader.load(testDataFile, testLabelsFile);
-        double[][] testData = loader.getData();
-        double[][] testLabels = loader.getLabels();
-
-        // 0s and 1s
-        DataWrapper filtered = DataUtils.filter(loader.getData(), loader.getLabels(), Arrays.asList(0, 1));
-        double[][] zerosAndOnesTestData = filtered.getData();
-        double[][] zerosAndOnesTestLabels = filtered.getLabels();
-
-        // Smaller test set
-        DataWrapper testSubset = DataUtils.subset(testData, testLabels, 100);
-        double[][] smallTestData = testSubset.getData();
-        double[][] smallTestLabels = testSubset.getLabels();
-
-
         IActivate activate = new SigmoidActivation();
-        ICost quadraticCost = new QuadraticCost(activate);
         ICost entropyCost = new CrossEntropyCost();
 
-        Network network = new Network(networkLayers, activate, entropyCost, 0.5d);
 
-        int[][] networkSizes = {
-                {784, 30, 10}, {784, 50, 10}, {784, 100, 10}, {784, 30, 30, 10}, {784, 50, 30, 10},
-                {784, 50, 50, 10}, {784, 100, 50, 10}, {784, 100, 30, 10}, {784, 100, 100, 10}
-        };
+        Network network = new Network(networkLayers, activate, entropyCost);
 
-//        try {
-//            gridSearch(smallData, smallLabels, smallTestData, smallTestLabels,
-//                    new int[] {10, 30},
-//                    networkSizes,
-//                    new double[] {0.01, 0.05, 0.1, 0.5, 1d, 5d},
-//                    new int[] {10, 100, 1000},
-//                    new double[] {0, 0.01, 0.1, 1, 10, 100},
-//                    new double[] {0, 0.1, 0.5, 0.9},
-//                    new File("gridSearch.tsv"));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+        justTrain(
+                network,
+                mnist,
+                mnistTest,
+                0.5,
+                20,
+                10,
+                5d,
+                0.3d,
+                true
+                );
+
+    }
+
+    public static void justTrain(Network network,
+                                 DataWrapper data,
+                                 DataWrapper testData,
+                                 double learningRate,
+                                 int epochs,
+                                 Integer batchSize,
+                                 double lambda,
+                                 double momentum,
+                                 boolean monitor) {
 
         final long startTime = System.currentTimeMillis();
-
-        //network.train(trainingData, trainingLabels, 10, 10, 1d, 0.1d, true);
-        // network.train(zerosAndOnesData, zerosAndOnesLabels, 10, 10, 1d, 0.0d, true);
-        // network.train(smallData, smallLabels, 10, 10, 0.0d, 0.0d, true);
-
+        network.train(data.getData(), data.getLabels(), learningRate, batchSize, epochs, lambda, momentum, monitor);
         final long endTime = System.currentTimeMillis();
-
         System.out.println("Total execution time: " + (endTime - startTime) / 60000 + " minutes");
-//        System.out.println();
+
         double acc;
-        acc = network.accuracy(testData, testLabels);
-        // acc = network.accuracy(zerosAndOnesTestData, zerosAndOnesTestLabels);
-        //acc = network.accuracy(smallTestData, smallTestLabels);
+        acc = network.accuracy(testData.getData(), testData.getLabels());
         System.out.println(acc);
 
-        // Best so far: 30hn, 0.05lr, 1lmbd, 10bs
-        // 0.74 30 1 0 10 0
     }
 }
