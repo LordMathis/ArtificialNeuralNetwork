@@ -15,8 +15,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        trainXOR();
-
+        //trainXOR();
+        //trainMnistSmall(false);
+        trainMNIST(true);
     }
 
     public static void gridSearch(
@@ -51,7 +52,7 @@ public class Main {
 
                                 String res = Arrays.toString(networkSize) + "\t" + learningRate + "\t" + batchSize +
                                         "\t" + lambda + "\t" + momentum + "\t" + epoch + "\t" + timeMins + "\t" + accuracy + "\n";
-                                System.out.println(res);
+                                System.out.print(res);
                                 pw.append(res);
                                 pw.flush();
 
@@ -81,7 +82,7 @@ public class Main {
                 100000,
                  null,
                 0.0d,
-                0.0d,
+                0.1d,
                 false
         );
 
@@ -92,7 +93,7 @@ public class Main {
 
     }
 
-    public static void trainMnistSmall() {
+    public static void trainMnistSmall(boolean standard) {
 
         DataWrapper dataWrapper = loadMnistData();
         DataWrapper testDataWrapper = loadMnistTestData();
@@ -103,36 +104,37 @@ public class Main {
         // Smaller test set
         DataWrapper testSubset = DataUtils.subset(testDataWrapper.getData(), testDataWrapper.getLabels(), 100);
 
+        if (standard) {
+            Network network = new Network(new int[]{784, 50, 10}, new SigmoidActivation(), new CrossEntropyCost());
+            justTrain(
+                    network,
+                    subset,
+                    testSubset,
+                    1,
+                    30,
+                    10,
+                    0,
+                    0.5,
+                    true);
+        } else {
 
-//        Network network = new Network(new int[]{784, 50, 10}, new SigmoidActivation(), new CrossEntropyCost());
-//        justTrain(
-//                network,
-//                subset,
-//                testSubset,
-//                0.05,
-//                20,
-//                10,
-//                0.5,
-//                0.3,
-//                true);
+            int[][] networkSizes = {
+                    {784, 30, 10}, {784, 50, 10}, {784, 100, 10}, {784, 30, 30, 10}, {784, 50, 30, 10},
+                    {784, 50, 50, 10}, {784, 100, 50, 10}, {784, 100, 30, 10}, {784, 100, 100, 10}
+            };
 
-
-        int[][] networkSizes = {
-                {784, 30, 10}, {784, 50, 10}, {784, 100, 10}, {784, 30, 30, 10}, {784, 50, 30, 10},
-                {784, 50, 50, 10}, {784, 100, 50, 10}, {784, 100, 30, 10}, {784, 100, 100, 10}
-        };
-
-        try {
-            gridSearch(subset, testSubset,
-                    new int[] {10, 30},
-                    networkSizes,
-                    new double[] {0.01, 0.05, 0.1, 0.5, 1d, 5d},
-                    new int[] {10, 100, 1000},
-                    new double[] {0, 0.01, 0.1, 1, 10, 100},
-                    new double[] {0, 0.1, 0.5, 0.9},
-                    new File("gridSearch.tsv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            try {
+                gridSearch(subset, testSubset,
+                        new int[]{10, 30},
+                        networkSizes,
+                        new double[]{0.01, 0.1, 1d},
+                        new int[]{10, 100, 1000},
+                        new double[]{0, 0.1, 1, 10},
+                        new double[]{0, 0.1, 0.5, 0.9},
+                        new File("gridSearch.tsv"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -160,6 +162,51 @@ public class Main {
                 true);
     }
 
+    public static void trainMNIST(boolean standard) {
+
+        DataWrapper mnist = loadMnistData();
+        DataWrapper mnistTest = loadMnistTestData();
+
+        if (standard) {
+
+            int[] networkLayers = {784, 64, 10};
+
+            IActivate activate = new SigmoidActivation();
+            ICost entropyCost = new CrossEntropyCost();
+
+            Network network = new Network(networkLayers, activate, entropyCost);
+
+            justTrain(
+                    network,
+                    mnist,
+                    mnistTest,
+                    0.8d,
+                    30,
+                    10,
+                    0.5d,
+                    0.9d,
+                    true
+            );
+        } else {
+
+            try {
+                gridSearch(
+                        mnist,
+                        mnistTest,
+                        new int[]{20},
+                        new int[][]{{784, 50, 10}},
+                        new double[]{1d},
+                        new int[]{10},
+                        new double[]{0.05, 0.08, 0.1, 0.3, 0.5},
+                        new double[]{0.3, 0.5, 0.8, 0.9, 1},
+                        new File("refined_search.tsv")
+                );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 
     public static DataWrapper loadMnistData() {
         File dataFile = new File("MNIST_DATA/mnist_train_vectors.csv");
@@ -179,33 +226,6 @@ public class Main {
         loader.load(testDataFile, testLabelsFile);
 
         return new DataWrapper(loader.getData(), loader.getLabels());
-    }
-
-    public static void trainMNIST() {
-
-        DataWrapper mnist = loadMnistData();
-        DataWrapper mnistTest = loadMnistTestData();
-
-        int[] networkLayers = {784, 50, 10};
-
-        IActivate activate = new SigmoidActivation();
-        ICost entropyCost = new CrossEntropyCost();
-
-
-        Network network = new Network(networkLayers, activate, entropyCost);
-
-        justTrain(
-                network,
-                mnist,
-                mnistTest,
-                0.5,
-                20,
-                10,
-                5d,
-                0.3d,
-                true
-                );
-
     }
 
     public static void justTrain(Network network,

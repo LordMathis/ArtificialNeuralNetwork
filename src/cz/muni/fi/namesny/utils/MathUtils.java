@@ -34,35 +34,6 @@ public class MathUtils {
         return result;
     }
 
-    /**
-     * Multiplies two matrices. The two input matrices have to have compatible dimensions.
-     * @param matrixA Two dimensional array representing input matrix A.
-     * @param matrixB Two dimensional array representing input matrix B.
-     * @return Matrix C such that C = A*B
-     */
-    public static double[][] multiply(double[][] matrixA, double[][] matrixB) {
-
-        int[] dimsA = MatrixUtils.getDimensions(matrixA);
-        int[] dimsB = MatrixUtils.getDimensions(matrixB);
-
-        if (dimsA[1] != dimsB[0]) {
-            throw new IllegalArgumentException("Matrix dimensions do not match!");
-        }
-
-        double[][] resultMatrix = MatrixUtils.initializeMatrix(dimsA[0], dimsB[1], false);
-
-        for (int i = 0; i < dimsA[0]; i++) {
-            for (int j = 0; j < dimsB[1]; j++) {
-                for (int k = 0; k < dimsA[1]; k++) {
-                    resultMatrix[i][j] += matrixA[i][k] * matrixB[k][j];
-                }
-            }
-        }
-
-        return resultMatrix;
-
-    }
-
     public static double[][] multiply(double[] vectorA, double[] vectorB) {
 
         double[][] result = new double[vectorA.length][vectorB.length];
@@ -79,25 +50,23 @@ public class MathUtils {
     public static double[][] multiply(double scalar, double[][] matrix) {
 
         int[] dims = MatrixUtils.getDimensions(matrix);
-        double[][] result = new double[dims[0]][dims[1]];
 
         for (int i = 0; i < dims[0]; i++) {
             for (int j = 0; j < dims[1]; j++) {
-                result[i][j] = matrix[i][j] * scalar;
+                matrix[i][j] = matrix[i][j] * scalar;
             }
         }
 
-        return result;
+        return matrix;
     }
 
     public static double[] multiply(double scalar, double[] vector) {
-        double[] result = new double[vector.length];
 
         for (int i = 0; i < vector.length; i++) {
-            result[i] = vector[i] * scalar;
+            vector[i] = vector[i] * scalar;
         }
 
-        return result;
+        return vector;
     }
 
     /**
@@ -114,15 +83,14 @@ public class MathUtils {
             throw new IllegalArgumentException("Matrix dimensions do not match!");
         }
 
-        double[][] resultMatrix = MatrixUtils.initializeMatrix(dimsA[0], dimsA[1], false);
 
         for (int i = 0; i < dimsA[0]; i++) {
             for (int j = 0; j < dimsA[1]; j++) {
-                resultMatrix[i][j] = matrixA[i][j] + matrixB[i][j];
+                matrixA[i][j] += matrixB[i][j];
             }
         }
 
-        return resultMatrix;
+        return matrixA;
 
     }
 
@@ -138,13 +106,11 @@ public class MathUtils {
             throw new IllegalArgumentException("Vector lengths do not match");
         }
 
-        double[] result = new double[vectorA.length];
-
         for (int i = 0; i < vectorA.length; i++) {
-            result[i] = vectorA[i] + vectorB[i];
+            vectorA[i] += vectorB[i];
         }
 
-        return result;
+        return vectorA;
     }
 
     /**
@@ -159,13 +125,11 @@ public class MathUtils {
             throw new IllegalArgumentException("Vector lengths do not match");
         }
 
-        double result[] = new double[vectorA.length];
-
         for (int i = 0; i < vectorA.length; i++) {
-            result[i] = vectorA[i] * vectorB[i];
+            vectorA[i] *= vectorB[i];
         }
 
-        return result;
+        return vectorA;
     }
 
     /**
@@ -180,13 +144,11 @@ public class MathUtils {
             throw new IllegalArgumentException("Vector lengths do not match");
         }
 
-        double[] result = new double[vectorA.length];
-
         for (int i = 0; i < vectorA.length; i++) {
-            result[i] = vectorA[i] - vectorB[i];
+            vectorA[i] -= vectorB[i];
         }
 
-        return result;
+        return vectorA;
     }
 
     public static double[][] transpose(double[][] matrix) {
