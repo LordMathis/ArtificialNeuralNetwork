@@ -169,7 +169,7 @@ public class Main {
 
         if (standard) {
 
-            int[] networkLayers = {784, 64, 10};
+            int[] networkLayers = {784, 150, 10};
 
             IActivate activate = new SigmoidActivation();
             ICost entropyCost = new CrossEntropyCost();
@@ -180,8 +180,8 @@ public class Main {
                     network,
                     mnist,
                     mnistTest,
-                    0.8d,
-                    30,
+                    0.5d,
+                    20,
                     10,
                     0.5d,
                     0.9d,

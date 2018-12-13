@@ -8,16 +8,18 @@ public class Layer {
     private double[][] weights;
     private double[] bias;
     private int layerSize;
+    private double[] layerResult;
 
     public Layer(int numNeurons, int inputSize) {
         this.setWeights(MatrixUtils.initializeMatrix(numNeurons, inputSize, true));
         this.layerSize = numNeurons;
+        this.layerResult = MatrixUtils.initializeVector(numNeurons, null);
         this.setBias(MatrixUtils.initializeVector(numNeurons, null));
     }
 
     public double[] compute(double[] inputs) {
         return MathUtils.sum(
-                MathUtils.multiply(getWeights(), inputs),
+                MathUtils.multiply(getWeights(), inputs, layerResult),
                 getBias());
     }
 
@@ -39,5 +41,13 @@ public class Layer {
 
     public int getLayerSize() {
         return layerSize;
+    }
+
+    public double[] getLayerResult() {
+        return layerResult;
+    }
+
+    public void setLayerResult(double[] layerResult) {
+        this.layerResult = layerResult;
     }
 }

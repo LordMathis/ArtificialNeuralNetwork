@@ -59,7 +59,8 @@ public class Network {
             delta = MathUtils.hadamard(
                     MathUtils.multiply(
                             MathUtils.transpose(layers[i + 1].getWeights()),
-                            delta),
+                            delta,
+                            layers[i].getLayerResult()),
                     activate.getDerivative(layerResults[i])
             );
 
@@ -80,22 +81,24 @@ public class Network {
 
     private void batchTrain(double[][] inputBatch, double[][] targets, int start, int end, double lambda, double momentum) {
 
-        // Initialize deltas
-
-        deltaBiases = new double[networkLength][];
-        deltaWeights = new double[networkLength][][];
-
+        // Reset deltas
         for (int i = 0; i < networkLength; i++) {
-            deltaBiases[i] = new double[layers[i].getLayerSize()];
+            for (int j = 0; j < layers[i].getLayerSize(); j++) {
+                deltaBiases[i][j] = 0;
 
-            int inputSize;
-            if (i == 0) {
-                inputSize = inputBatch[0].length;
-            } else {
-                inputSize = getLayers()[i - 1].getWeights().length;
+                int inputSize;
+                if (i == 0) {
+                    inputSize = inputBatch[0].length;
+                } else {
+                    inputSize = getLayers()[i - 1].getWeights().length;
+                }
+
+                for (int k = 0; k < inputSize; k++) {
+                    deltaWeights[i][j][k] = 0;
+                }
             }
-            deltaWeights[i] = new double[layers[i].getLayerSize()][inputSize];
         }
+
 
         // Batch train
 
@@ -165,6 +168,21 @@ public class Network {
         for (int i = 0; i < networkLength; i++) {
             int[] dims = MatrixUtils.getDimensions(getLayers()[i].getWeights());
             momentums[i] = MatrixUtils.initializeMatrix(dims[0], dims[1], false);
+        }
+
+        deltaBiases = new double[networkLength][];
+        deltaWeights = new double[networkLength][][];
+
+        for (int i = 0; i < networkLength; i++) {
+            deltaBiases[i] = new double[layers[i].getLayerSize()];
+
+            int inputSize;
+            if (i == 0) {
+                inputSize = dataset[0].length;
+            } else {
+                inputSize = getLayers()[i - 1].getWeights().length;
+            }
+            deltaWeights[i] = new double[layers[i].getLayerSize()][inputSize];
         }
 
         int epoch = 0;

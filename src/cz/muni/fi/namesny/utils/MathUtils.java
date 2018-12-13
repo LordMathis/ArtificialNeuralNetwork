@@ -13,15 +13,13 @@ public class MathUtils {
      * @param vector
      * @return Vector that is matrix*vector
      */
-    public static double[] multiply(double[][] matrix, double[] vector) {
+    public static double[] multiply(double[][] matrix, double[] vector, double[] result) {
 
         int[] dimsMatrix = MatrixUtils.getDimensions(matrix);
 
         if (dimsMatrix[1] != vector.length) {
             throw new IllegalArgumentException("Matrix and vector dimensions do not match");
         }
-
-        double[] result = new double[dimsMatrix[0]];
 
         for (int i = 0; i < dimsMatrix[0]; i++) {
             double value = 0;
@@ -36,7 +34,7 @@ public class MathUtils {
 
     public static double[][] multiply(double[] vectorA, double[] vectorB) {
 
-        double[][] result = new double[vectorA.length][vectorB.length];
+         double[][] result = new double[vectorA.length][vectorB.length];
 
         for (int i = 0; i < vectorA.length; i++) {
             for (int j = 0; j < vectorB.length; j++) {
@@ -153,7 +151,7 @@ public class MathUtils {
 
     public static double[][] transpose(double[][] matrix) {
         int[] dimensions = MatrixUtils.getDimensions(matrix);
-        double [][] resultMatrix = new double[dimensions[1]][dimensions[0]];
+        double[][] resultMatrix = new double[dimensions[1]][dimensions[0]];
 
         for (int i = 0; i < dimensions[0]; i++)
             for (int j = 0; j < dimensions[1]; j++)
