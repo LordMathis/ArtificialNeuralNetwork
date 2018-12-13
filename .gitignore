@@ -67,3 +67,5 @@ fabric.properties
 
 # Big files
 MNIST_DATA/
+
+target/classes/*
