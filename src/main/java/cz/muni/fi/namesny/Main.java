@@ -16,8 +16,9 @@ public class Main {
     public static void main(String[] args) {
 
         //trainXOR();
-        trainMnistSmall(false);
+        //trainMnistSmall(false);
         //trainMNIST(false);
+        trainMNIST01();
     }
 
     public static void gridSearch(
@@ -150,16 +151,16 @@ public class Main {
         DataWrapper filtered = DataUtils.filter(testDataWrapper.getData(), testDataWrapper.getLabels(), Arrays.asList(0, 1));
 
 
-        Network network = new Network(new int[]{784, 50, 10}, new SigmoidActivation(), new CrossEntropyCost());
+        Network network = new Network(new int[]{784, 50, 30, 10}, new SigmoidActivation(), new CrossEntropyCost());
         justTrain(
                 network,
                 zerosAndOnes,
                 filtered,
-                0.05,
+                0.5,
                 20,
                 10,
                 0.5,
-                0.3,
+                0.9,
                 true);
     }
 

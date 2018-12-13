@@ -19,7 +19,7 @@ public class Layer {
 
     public double[] compute(double[] inputs) {
         return MathUtils.sum(
-                MathUtils.multiply(getWeights(), inputs, layerResult),
+                MathUtils.multiply(getWeights(), inputs),
                 getBias());
     }
 
@@ -47,7 +47,4 @@ public class Layer {
         return layerResult;
     }
 
-    public void setLayerResult(double[] layerResult) {
-        this.layerResult = layerResult;
-    }
 }

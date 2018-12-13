@@ -59,8 +59,7 @@ public class Network {
             delta = MathUtils.hadamard(
                     MathUtils.multiply(
                             MathUtils.transpose(layers[i + 1].getWeights()),
-                            delta,
-                            layers[i].getLayerResult()),
+                            delta),
                     activate.getDerivative(layerResults[i])
             );
 

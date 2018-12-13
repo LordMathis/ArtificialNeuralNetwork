@@ -13,13 +13,15 @@ public class MathUtils {
      * @param vector
      * @return Vector that is matrix*vector
      */
-    public static double[] multiply(double[][] matrix, double[] vector, double[] result) {
+    public static double[] multiply(double[][] matrix, double[] vector) {
 
         int[] dimsMatrix = MatrixUtils.getDimensions(matrix);
 
         if (dimsMatrix[1] != vector.length) {
             throw new IllegalArgumentException("Matrix and vector dimensions do not match");
         }
+
+        double[] result = new double[dimsMatrix[0]];
 
         for (int i = 0; i < dimsMatrix[0]; i++) {
             double value = 0;
