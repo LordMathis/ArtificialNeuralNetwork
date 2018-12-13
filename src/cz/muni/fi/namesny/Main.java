@@ -16,8 +16,8 @@ public class Main {
     public static void main(String[] args) {
 
         //trainXOR();
-        //trainMnistSmall(false);
-        trainMNIST(true);
+        trainMnistSmall(false);
+        //trainMNIST(false);
     }
 
     public static void gridSearch(
@@ -111,27 +111,28 @@ public class Main {
                     subset,
                     testSubset,
                     1,
-                    30,
+                    50,
                     10,
                     0,
                     0.5,
                     true);
         } else {
 
-            int[][] networkSizes = {
-                    {784, 30, 10}, {784, 50, 10}, {784, 100, 10}, {784, 30, 30, 10}, {784, 50, 30, 10},
-                    {784, 50, 50, 10}, {784, 100, 50, 10}, {784, 100, 30, 10}, {784, 100, 100, 10}
-            };
-
             try {
-                gridSearch(subset, testSubset,
-                        new int[]{10, 30},
+
+                int[][] networkSizes = new int[][]{{784, 100, 10}, {784, 150, 10}, {784, 200, 10}, {784, 50, 50, 10}, {784, 100, 100, 10}, {784, 100, 50, 10}};
+
+                gridSearch(
+                        subset,
+                        testSubset,
+                        new int[]{30},
                         networkSizes,
-                        new double[]{0.01, 0.1, 1d},
-                        new int[]{10, 100, 1000},
-                        new double[]{0, 0.1, 1, 10},
-                        new double[]{0, 0.1, 0.5, 0.9},
-                        new File("gridSearch.tsv"));
+                        new double[]{0.1d},
+                        new int[]{10},
+                        new double[]{0},
+                        new double[]{0},
+                        new File("network_sizes.tsv")
+                );
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -169,7 +170,7 @@ public class Main {
 
         if (standard) {
 
-            int[] networkLayers = {784, 150, 10};
+            int[] networkLayers = {784, 100, 10};
 
             IActivate activate = new SigmoidActivation();
             ICost entropyCost = new CrossEntropyCost();
@@ -180,25 +181,28 @@ public class Main {
                     network,
                     mnist,
                     mnistTest,
-                    0.5d,
+                    0.1d,
                     20,
                     10,
-                    0.5d,
-                    0.9d,
+                    0.0d,
+                    0.0d,
                     true
             );
         } else {
 
             try {
+
+                int[][] networkSizes = new int[][]{{784, 100, 10}, {784, 150, 10}, {784, 200, 10}, {784, 50, 50, 10}, {784, 100, 100, 10}, {784, 100, 50, 10}};
+
                 gridSearch(
                         mnist,
                         mnistTest,
-                        new int[]{20},
-                        new int[][]{{784, 50, 10}},
-                        new double[]{1d},
+                        new int[]{30},
+                        networkSizes,
+                        new double[]{0.1d},
                         new int[]{10},
-                        new double[]{0.05, 0.08, 0.1, 0.3, 0.5},
-                        new double[]{0.3, 0.5, 0.8, 0.9, 1},
+                        new double[]{0},
+                        new double[]{0},
                         new File("refined_search.tsv")
                 );
             } catch (FileNotFoundException e) {
