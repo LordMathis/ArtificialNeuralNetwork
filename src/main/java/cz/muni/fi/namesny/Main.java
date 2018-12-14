@@ -17,8 +17,8 @@ public class Main {
 
         //trainXOR();
         //trainMnistSmall(false);
-        //trainMNIST(false);
-        trainMNIST01();
+        trainMNIST(true);
+        //trainMNIST01();
     }
 
     public static void gridSearch(
@@ -156,8 +156,8 @@ public class Main {
                 network,
                 zerosAndOnes,
                 filtered,
-                0.5,
-                20,
+                0.1,
+                50,
                 10,
                 0.5,
                 0.9,
@@ -171,7 +171,7 @@ public class Main {
 
         if (standard) {
 
-            int[] networkLayers = {784, 100, 10};
+            int[] networkLayers = {784, 50, 10};
 
             IActivate activate = new SigmoidActivation();
             ICost entropyCost = new CrossEntropyCost();
@@ -182,11 +182,11 @@ public class Main {
                     network,
                     mnist,
                     mnistTest,
-                    0.1d,
-                    20,
+                    2d,
+                    50,
                     10,
-                    0.0d,
-                    0.0d,
+                    0.1d,
+                    0.9d,
                     true
             );
         } else {

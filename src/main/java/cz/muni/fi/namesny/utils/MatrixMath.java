@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  *
  */
-public class MathUtils {
+public class MatrixMath {
 
     /**
      * Multiplies matrix with vector

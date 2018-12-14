@@ -1,6 +1,6 @@
 package cz.muni.fi.namesny.network;
 
-import cz.muni.fi.namesny.utils.MathUtils;
+import cz.muni.fi.namesny.utils.MatrixMath;
 
 public class CrossEntropyCost implements ICost{
     @Override
@@ -31,6 +31,6 @@ public class CrossEntropyCost implements ICost{
 
     @Override
     public double[] getDelta(double[] prediction, double[] target, double[] z) {
-        return MathUtils.subtract(prediction, target);
+        return MatrixMath.subtract(prediction, target);
     }
 }

@@ -1,6 +1,6 @@
 package cz.muni.fi.namesny.network;
 
-import cz.muni.fi.namesny.utils.MathUtils;
+import cz.muni.fi.namesny.utils.MatrixMath;
 import cz.muni.fi.namesny.utils.MatrixUtils;
 
 public class Network {
@@ -56,21 +56,21 @@ public class Network {
 
         for (int i = networkLength - 2; i >= 0; i--) {
 
-            delta = MathUtils.hadamard(
-                    MathUtils.multiply(
-                            MathUtils.transpose(layers[i + 1].getWeights()),
+            delta = MatrixMath.hadamard(
+                    MatrixMath.multiply(
+                            MatrixMath.transpose(layers[i + 1].getWeights()),
                             delta),
                     activate.getDerivative(layerResults[i])
             );
 
-            deltaBiases[i] = MathUtils.sum(
+            deltaBiases[i] = MatrixMath.sum(
                     deltaBiases[i],
                     delta
             );
 
-            deltaWeights[i] = MathUtils.sum(
+            deltaWeights[i] = MatrixMath.sum(
                     deltaWeights[i],
-                    MathUtils.multiply(
+                    MatrixMath.multiply(
                             delta,
                             layerActivations[i]
                     )
@@ -121,14 +121,14 @@ public class Network {
                     targets[i],
                     layerActivations[layerActivations.length - 1]);
 
-            deltaBiases[deltaBiases.length - 1] = MathUtils.sum(
+            deltaBiases[deltaBiases.length - 1] = MatrixMath.sum(
                     deltaBiases[deltaBiases.length - 1],
                     delta
             );
 
-            deltaWeights[deltaWeights.length - 1] = MathUtils.sum(
+            deltaWeights[deltaWeights.length - 1] = MatrixMath.sum(
                     deltaWeights[deltaWeights.length - 1],
-                    MathUtils.multiply(
+                    MatrixMath.multiply(
                             delta,
                             layerActivations[layerActivations.length - 2]
                     )
@@ -210,22 +210,22 @@ public class Network {
         for (int i = getLayers().length - 1; i >= 0; i--) {
 
             // Update momentum
-            momentums[i] = MathUtils.sum(
-                MathUtils.multiply(
+            momentums[i] = MatrixMath.sum(
+                MatrixMath.multiply(
                         momentum,
                         momentums[i]
                 ),
-                MathUtils.multiply(
+                MatrixMath.multiply(
                         (-1 * this.learningRate) / (double) batchSize,
                         deltaWeights[i])
             );
 
-            double[][] regularization = MathUtils.multiply(
+            double[][] regularization = MatrixMath.multiply(
                     1 - (((-1) * this.learningRate * lambda) / (double) batchSize),
                     getLayers()[i].getWeights()
             );
 
-            double[][] newWeights = MathUtils.sum(
+            double[][] newWeights = MatrixMath.sum(
                     regularization,
                     momentums[i]
             );
@@ -234,10 +234,10 @@ public class Network {
 
             // Update Bias
 
-            double[] changeBias = MathUtils.multiply(
+            double[] changeBias = MatrixMath.multiply(
                     (-1 * this.learningRate) / (double) batchSize,
                     deltaBiases[i]);
-            double[] newBias = MathUtils.sum(getLayers()[i].getBias(), changeBias);
+            double[] newBias = MatrixMath.sum(getLayers()[i].getBias(), changeBias);
 
             getLayers()[i].setBias(newBias);
 

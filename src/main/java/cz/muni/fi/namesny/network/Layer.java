@@ -1,6 +1,6 @@
 package cz.muni.fi.namesny.network;
 
-import cz.muni.fi.namesny.utils.MathUtils;
+import cz.muni.fi.namesny.utils.MatrixMath;
 import cz.muni.fi.namesny.utils.MatrixUtils;
 
 public class Layer {
@@ -18,8 +18,8 @@ public class Layer {
     }
 
     public double[] compute(double[] inputs) {
-        return MathUtils.sum(
-                MathUtils.multiply(getWeights(), inputs),
+        return MatrixMath.sum(
+                MatrixMath.multiply(getWeights(), inputs),
                 getBias());
     }
 
