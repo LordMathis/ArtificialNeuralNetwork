@@ -27,20 +27,22 @@ public class MNIST {
         network.train(
                 mnist.getData(),
                 mnist.getLabels(),
-                2d,
+                2.0d,
                 10,
                 60,
-                0.1d,
+                0.09d,
                 0.9d,
                 true);
 
         final long endTime = System.currentTimeMillis();
         System.out.println("Total execution time: " + (endTime - startTime) / 60000 + " minutes");
 
-        exportPredictions(network, mnist.getData(), new File("trainPredictions"));
+        //exportPredictions(network, mnist.getData(), new File("trainPredictions"));
 
         DataWrapper mnistTest = loadMnistTestData();
-        exportPredictions(network, mnistTest.getData(), new File("actualTestPredictions"));
+        //exportPredictions(network, mnistTest.getData(), new File("actualTestPredictions"));
+
+        System.out.println("Test accuracy : " + network.accuracy(mnistTest.getData(), mnistTest.getLabels()));
 
 
     }

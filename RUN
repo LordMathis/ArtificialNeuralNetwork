@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "Adding Maven module"
+module add maven
+
+echo "Compiling..."
+mvn clean compile
+
+echo "Running MNIST..."
+mvn exec:java -Dexec.mainClass=cz.muni.fi.namesny.Main
+
