@@ -90,4 +90,9 @@ public class MNISTLoader implements IDataLoader {
     public double[][] getLabels() {
         return labels;
     }
+
+    @Override
+    public DataWrapper getDataWrapper() {
+        return new DataWrapper(this.data, this.labels);
+    }
 }

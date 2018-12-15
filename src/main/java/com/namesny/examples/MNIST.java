@@ -47,7 +47,7 @@ public class MNIST {
         MNISTLoader loader = new MNISTLoader();
         loader.load(dataFile, labelFile);
 
-        return new DataWrapper(loader.getData(), loader.getLabels());
+        return loader.getDataWrapper();
     }
 
     private DataWrapper loadMnistTestData() {
@@ -57,7 +57,7 @@ public class MNIST {
         MNISTLoader loader = new MNISTLoader();
         loader.load(testDataFile, testLabelsFile);
 
-        return new DataWrapper(loader.getData(), loader.getLabels());
+        return loader.getDataWrapper();
     }
 
 }
