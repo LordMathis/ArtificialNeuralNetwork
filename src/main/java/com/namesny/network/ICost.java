@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.network;
+package com.namesny.network;
 
 public interface ICost {
     double getCost(double[] prediction, double[] target);

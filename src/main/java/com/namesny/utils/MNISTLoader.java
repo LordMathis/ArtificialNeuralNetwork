@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.utils;
+package com.namesny.utils;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package cz.muni.fi.namesny;
+package com.namesny;
 
-import cz.muni.fi.namesny.examples.MNIST;
+import com.namesny.examples.MNIST;
 
 public class Main {
 

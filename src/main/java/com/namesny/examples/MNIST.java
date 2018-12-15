@@ -1,13 +1,10 @@
-package cz.muni.fi.namesny.examples;
+package com.namesny.examples;
 
-import cz.muni.fi.namesny.network.*;
-import cz.muni.fi.namesny.utils.DataWrapper;
-import cz.muni.fi.namesny.utils.MNISTLoader;
-import cz.muni.fi.namesny.utils.MatrixUtils;
+import com.namesny.network.*;
+import com.namesny.utils.DataWrapper;
+import com.namesny.utils.MNISTLoader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 public class MNIST {
 
@@ -37,11 +34,9 @@ public class MNIST {
         final long endTime = System.currentTimeMillis();
         System.out.println("Total execution time: " + (endTime - startTime) / 60000 + " minutes");
 
-        exportPredictions(network, mnist.getData(), new File("trainPredictions"));
-
         DataWrapper mnistTest = loadMnistTestData();
-        exportPredictions(network, mnistTest.getData(), new File("actualTestPredictions"));
-
+        double accuracy = network.accuracy(mnistTest.getData(), mnistTest.getLabels());
+        System.out.println(accuracy);
 
     }
 
@@ -63,30 +58,6 @@ public class MNIST {
         loader.load(testDataFile, testLabelsFile);
 
         return new DataWrapper(loader.getData(), loader.getLabels());
-    }
-
-    private void exportPredictions(Network network, double[][] data, File file) {
-
-        double[][] results = new double[data.length][10];
-
-        for (int i = 0; i < data.length; i++) {
-            results[i] = network.guess(data[i]);
-        }
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < results.length; i++) {
-            int predictedClass = MatrixUtils.argmax(results[i]);
-            pw.write(predictedClass + "\n");
-        }
-
-        pw.close();
-
     }
 
 }

@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.utils;
+package com.namesny.utils;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;

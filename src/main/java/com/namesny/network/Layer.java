@@ -1,7 +1,7 @@
-package cz.muni.fi.namesny.network;
+package com.namesny.network;
 
-import cz.muni.fi.namesny.utils.MatrixMath;
-import cz.muni.fi.namesny.utils.MatrixUtils;
+import com.namesny.utils.MatrixMath;
+import com.namesny.utils.MatrixUtils;
 
 public class Layer {
 

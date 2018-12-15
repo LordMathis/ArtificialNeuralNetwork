@@ -1,6 +1,6 @@
-package cz.muni.fi.namesny.network;
+package com.namesny.network;
 
-import cz.muni.fi.namesny.utils.MatrixMath;
+import com.namesny.utils.MatrixMath;
 
 public class QuadraticCost implements ICost{
 

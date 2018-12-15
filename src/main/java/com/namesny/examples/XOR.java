@@ -1,9 +1,9 @@
-package cz.muni.fi.namesny.examples;
+package com.namesny.examples;
 
-import cz.muni.fi.namesny.network.CrossEntropyCost;
-import cz.muni.fi.namesny.network.Network;
-import cz.muni.fi.namesny.network.SigmoidActivation;
-import cz.muni.fi.namesny.utils.MatrixUtils;
+import com.namesny.network.CrossEntropyCost;
+import com.namesny.network.Network;
+import com.namesny.network.SigmoidActivation;
+import com.namesny.utils.MatrixUtils;
 
 public class XOR {
 

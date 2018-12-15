@@ -1,8 +1,8 @@
-package cz.muni.fi.namesny.utils;
+package com.namesny.utils;
 
-import cz.muni.fi.namesny.network.CrossEntropyCost;
-import cz.muni.fi.namesny.network.Network;
-import cz.muni.fi.namesny.network.SigmoidActivation;
+import com.namesny.network.CrossEntropyCost;
+import com.namesny.network.Network;
+import com.namesny.network.SigmoidActivation;
 
 import java.io.File;
 import java.io.FileNotFoundException;

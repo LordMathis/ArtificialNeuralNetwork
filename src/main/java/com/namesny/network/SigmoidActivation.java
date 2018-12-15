@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.network;
+package com.namesny.network;
 
 public class SigmoidActivation implements IActivate{
 

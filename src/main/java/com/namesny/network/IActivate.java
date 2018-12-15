@@ -1,4 +1,4 @@
-package cz.muni.fi.namesny.network;
+package com.namesny.network;
 
 public interface IActivate {
     double[] getActivation(double[] x);
